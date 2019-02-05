@@ -54,7 +54,7 @@ jobs:
         Get-ChildItem -Path $batchDir
 
         Get-ChildItem -Path ($batchDir + '\..')
-
+      
       condition: contains(variables['CONFIG'], 'vs2008')
       displayName: Patch vs2008 (if needed)
 
@@ -68,12 +68,16 @@ jobs:
     - script: set PYTHONUNBUFFERED=1
 
     # Configure the VM
-    - script: setup_conda_rc .\ .\recipe .\.ci_support\%CONFIG%.yaml
-    
+    - script: |
+        setup_conda_rc .\ .\recipe .\.ci_support\%CONFIG%.yaml
+        set > e.txt
+        type e.txt
+
     # Configure the VM.
     - script: |
         run_conda_forge_build_setup
-
+        set > e.txt
+        type e.txt
       displayName: conda-forge build setup
     
 
@@ -87,6 +91,8 @@ jobs:
       condition: contains(variables['CONFIG'], 'vs2008')
 
     - script: |
+        set > e.txt
+        type e.txt
         conda.exe build recipe -m .ci_support\%CONFIG%.yaml --quiet
       displayName: Build recipe
       condition: not(contains(variables['CONFIG'], 'vs2008'))
